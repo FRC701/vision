@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 '''
-This sample demonstrates Canny edge detection.
+Vistion target detection for robot
 
 Usage:
-  edge.py [<video source>]
+  Boteyes.py [<video source>]
 
   Trackbars control edge thresholds.
 
