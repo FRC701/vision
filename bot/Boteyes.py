@@ -42,6 +42,10 @@ if __name__ == '__main__':
     ([25, 146, 190], [62, 174, 250]),
     ([103, 86, 65], [145, 133, 128])
 ]
+    widthmax = 300
+    heightmax = 300
+    widthmin = 100
+    heightmin = 30
 
     cv2.namedWindow('output')
     cv2.createTrackbar('thrs1', 'output', 2000, 5000, nothing)
@@ -68,8 +72,8 @@ if __name__ == '__main__':
         hb = cv2.getTrackbarPos('hb','rgb')
         la=[lb, lg, lr]
         ha=[hb, hg, hr]
-        print("la:",la)
-        print("ha:",ha)
+        #print("la:",la)
+        #print("ha:",ha)
         lower= np.array(la, dtype = "uint8")
         upper=np.array(ha, dtype = "uint8")
         # find the colors within the specified boundaries and apply
@@ -89,7 +93,16 @@ if __name__ == '__main__':
         thrs2 = cv2.getTrackbarPos('thrs2', 'output')
         #edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
         cimage, cnts, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        print("countours found:",len(cnts));
+        print("countours found:",len(cnts))
+        filter = []
+        for cnt in cnts:
+            rect = cv2.minAreaRect(cnt)       #I have used min Area rect for better result
+            width = rect[1][0]
+            height = rect[1][1]
+            if (width<widthmax) and (height <heightmax) and (width >= widthmin) and (height > heightmin):
+                filter.append(cnt)
+        print("filter length:", len(filter))
+        print("")
 
         vis = img.copy()
         vis = np.uint8(vis/2.)
