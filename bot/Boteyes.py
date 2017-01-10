@@ -82,22 +82,22 @@ if __name__ == '__main__':
         #pprint.pprint(output)
 
         gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
+        gray2=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
+        ret,thresh = cv2.threshold(gray,127,255,0)
         thrs1 = cv2.getTrackbarPos('thrs1', 'output')
         thrs2 = cv2.getTrackbarPos('thrs2', 'output')
-        edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
-        cnts = cv2.findContours(edge.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        #edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
+        cimage, cnts, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         print("countours found:",len(cnts));
-
-
 
         vis = img.copy()
         vis = np.uint8(vis/2.)
-        vis[edge != 0] = (0, 255, 0)
+        #vis[edge != 0] = (0, 255, 0)
         #for c in cnts:
             #print ("contour:")
             #pprint.pprint(c)
-        cv2.imshow('output', vis)
+        #cv2.imshow('output', vis)
         cv2.imshow('mask',mask)
 
 
