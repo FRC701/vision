@@ -44,7 +44,13 @@ if __name__ == '__main__':
     ([103, 86, 65], [145, 133, 128])
 ]
     #min and max width of potential contours
-
+    widthmax = 800
+    heightmax = 100
+    widthmin = 20
+    heightmin = 20
+    topRatio = 4.0
+    bottomRatio = 8.25
+    deviation = 3.0
     sd = ShapeDetector()
     #we will have a window for the controls and a window for the final display
     cv2.namedWindow('output')
@@ -112,18 +118,38 @@ if __name__ == '__main__':
             #cv2.drawContours(display,[box],0,(255,0,255),2)
             width = rect[1][1]
             height = rect[1][0]
-            widthmax = 800
-            heightmax = 100
-            widthmin = 20
-            heightmin = 20
             print ("checking ",height,width)
-            if (width<widthmax) and (height <heightmax) and (width >= widthmin) and (height > heightmin):
-                print ("detected ",height,width)
+            epsilon = 0.01*cv2.arcLength(cnt,True)
+            approx = cv2.approxPolyDP(cnt,epsilon,True)
+            print("approx length:", len(approx), len(cnt))
+            if len(approx)== 4:
+                rect = cv2.minAreaRect(cnt)
+                print("rect")
+                pprint.pprint(rect)
+                box = cv2.boxPoints(rect)
+                print("before")
+                pprint.pprint(box)
+                box = np.int0(box)
+                print("after")
+                pprint.pprint(box)
+                rWidth = rect[1][0]
+                rHeight = rect[1][1]
+                if(rWidth > 0) and (rHeight > 0):
+                    ratio = float(rWidth) / float(rHeight)
+                    print("Ratio:", ratio, rWidth, rHeight)
+                    if(ratio > topRatio - deviation) and (ratio < topRatio + deviation):
+                        cv2.drawContours(display, [box], -1, (0, 255, 0), 2)
+                        print("found top rectangle")
+                    if(ratio > bottomRatio - deviation) and (ratio < bottomRatio + deviation):
+                        cv2.drawContours(display, [box], -1, (255, 100, 0), 2)
+                        print("found bottom rectangle")
+            #if (width<widthmax) and (height <heightmax) and (width >= widthmin) and (height > heightmin):
+                #print ("detected ",height,width)
                 #now we make sure it is a rectangle
                 #shape = sd.detect(cnt)
                 #if shape == "rectangle":
                  #   filter.append(cnt)
-                cv2.drawContours(display, [cnt], -1, (0, 255, 0), 2)
+                
 
         print("filter length:", len(filter))
         print("")
