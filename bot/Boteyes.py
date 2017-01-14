@@ -109,7 +109,7 @@ if __name__ == '__main__':
             rect = cv2.minAreaRect(cnt)
             box = cv2.boxPoints(rect)
             box = np.int0(box)
-            cv2.drawContours(display,[box],0,(255,0,255),2)
+            #cv2.drawContours(display,[box],0,(255,0,255),2)
             width = rect[1][1]
             height = rect[1][0]
             widthmax = 800
