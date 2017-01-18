@@ -40,7 +40,7 @@ if __name__ == '__main__':
     lastTop=None
     lastBottom=None
 
-]
+
     #min and max width of potential contours
     widthmax = 800
     heightmax = 100
@@ -162,7 +162,7 @@ if __name__ == '__main__':
                             dist=tdist
                             closestBott=rect
                 newBottom=closestBott
-         else:
+        else:
             if(len(bottomRects)>0):
                 newBottom=bottomRects[0]
 
