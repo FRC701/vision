@@ -84,7 +84,6 @@ class ImageProcesser:
 
         newTop=None
         newBottom=None
-        print("")
         #now we check to see if more than one of each rect was found
         if len(topRects)>1:
             print ("too many top and bottom rects")
@@ -132,10 +131,8 @@ class ImageProcesser:
         pprint.pprint(newBottom)
         #if we find a bottom and top rectangle we draw it out and set the lastTop and lastBottom for next image
         if newTop is not None:
-            #cv2.drawContours(display, [newTop], -1, (0, 255, 0),2)
             self.lastTop=newTop
 
         if newBottom is not None:
-            #cv2.drawContours(display, [newBottom], -1, (0, 100, 255), 2)
             self.lastBottom=newBottom
-        cv2.imshow('display',display)
+        return newTop, newBottom
