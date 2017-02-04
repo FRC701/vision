@@ -43,6 +43,7 @@ if __name__ == '__main__':
 
 
     #min and max width of potential contours
+    screenCenter = 320
     widthmax = 800
     heightmax = 100
     widthmin = 20
@@ -71,7 +72,15 @@ if __name__ == '__main__':
     while True:
         #pull image from video feed
         flag, img = cap.read()
-        imgprocesser.process_image(img)
+        screenCenter = len(img.cols) / 2
+        topRect, bottomRect = imgprocesser.process_image(img)
+        tRectCenter = topRect[0][0]
+        tRectWidth = topRect[1][0]
+        topOffset = screenCenter - tRectCenter
+        if(tRectCenter - (tRectWidth / 2) < 0):
+            print("Rectangle is off screen to the left!")
+        if(tRectCenter + (tRectWidth / 2) > len(img.cols):
+           print("Rectangle is off screen to the right!")
        # cv2.imshow("images\\\", np.hstack([mask, output]))
         ch = cv2.waitKey(5) & 0xFF
         if ch == 27:

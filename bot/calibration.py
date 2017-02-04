@@ -14,7 +14,7 @@ import pprint
 # built-in module
 import sys
 
-
+points = []
 if __name__ == '__main__':
     print(__doc__)
 
@@ -29,14 +29,20 @@ if __name__ == '__main__':
     
     imgprocesser=ImageProcesser()
 
-
-    while True:
-        #pull image from video feed
-        flag, img = cap.read()
-        topRect, bottomRect = imgprocesser.process_image(img)
-        print("topRect and BottomRect:") 
-        pprint.pprint(topRect)
-        pprint.pprint(bottomRect)
-        if(topRect is not None and bottomRect is not None):
-            break
-    print("found rects")
+    def findRects()
+        while True:
+            #pull image from video feed
+            flag, img = cap.read()
+            topRect, bottomRect = imgprocesser.process_image(img)
+            print("topRect and BottomRect:") 
+            pprint.pprint(topRect)
+            pprint.pprint(bottomRect)
+            if(topRect is not None and bottomRect is not None):
+                break
+    counter = 0
+    if(counter < 5):
+        print("found rects")
+        tr, br = findRects()
+        points.append([tr, br])
+        print("Points", len(points))
+        counter += 1
