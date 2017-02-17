@@ -4,14 +4,17 @@ import numpy as np
 import sys
 
 class ImageProcesser:
-    
+
     lastTop=None
     lastBottom=None
-    
+
     def __init__(self):
         pass
 
-    def process_image(self, img):
+    def process_image(self, img,thrs1=100,thrs2=200,draw=False):
+        display=None;
+        if(draw==True):
+            display=img.copy();
         widthmax = 800
         heightmax = 100
         widthmin = 20
@@ -22,12 +25,14 @@ class ImageProcesser:
         rotationUThresh = 15.0
         rotationLThresh = -15.0
         #create a copy of the orginal image so we can us it for the final display
-        display = img.copy()
+
         height, width, channels = img.shape
         #convert to 1 channel
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        thrs1 = cv2.getTrackbarPos('thrs1', 'controls')
-        thrs2 = cv2.getTrackbarPos('thrs2', 'controls')
+
+
+        #thrs1 = cv2.getTrackbarPos('thrs1', 'controls')
+        #thrs2 = cv2.getTrackbarPos('thrs2', 'controls')
         #get edge version of the bw image
         edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
         #find all the contours
@@ -46,6 +51,8 @@ class ImageProcesser:
             #we only want 4 point shapes
             if len(approx)== 4:
                 rect = cv2.minAreaRect(cnt)
+                if(draw==True):
+                    cv2.drawContours(display, [cnt], -1, (255,255,0), 3)
                 print("rect")
                 pprint.pprint(rect)
                 #get the height and width of the rectangle
@@ -72,12 +79,14 @@ class ImageProcesser:
                         #now we check ratios to find the top and bottom ratio
                         if(ratio > topRatio - deviation) and (ratio < topRatio + deviation):
                             print("found top rectangle")
-                            topRects.append(rect)
+                            cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
+                            topRects.append([rect,cnt])
 
 
                         if(ratio > bottomRatio - deviation) and (ratio < bottomRatio + deviation):
                             print("found bottom rectangle")
-                            bottomRects.append(rect)
+                            cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
+                            bottomRects.append([rect,cnt])
 
 
 
@@ -93,7 +102,7 @@ class ImageProcesser:
                 dist=None
                 for trect in topRects:
                     if dist is None:
-                        closestTop=trect
+                        closestTop=trect[0]
                         dist=abs(trect[0][0])-abs(self.lastTop[0][0])
                     else:
                         tdist=abs(trect[0][0])-abs(self.lastTop[0][0])
@@ -103,7 +112,8 @@ class ImageProcesser:
                 newTop=closestTop
         else:
             if(len(topRects)>0):
-                newTop=topRects[0]
+                newTop=topRects[0][0]
+                cv2.drawContours(display, [topRects[0][1]], -1, (0,255,0), 3)
 
         if len(bottomRects)>1 :
             if(self.lastBottom is not None):
@@ -112,7 +122,7 @@ class ImageProcesser:
                 #loop through rects and see which one is closest to the last found rect
                 for trect in bottomRects:
                     if dist is None:
-                        closestBott=trect
+                        closestBott=trect[0]
                         dist=abs(trect[0][0])-abs(self.lastBottom[0][0])
                     else:
                         tdist=abs(trect[0][0])-abs(self.lastBottom[0][0])
@@ -123,6 +133,8 @@ class ImageProcesser:
         else:
             if(len(bottomRects)>0):
                 newBottom=bottomRects[0]
+                cv2.drawContours(display, [bottomRects[0][1]], -1, (0,255,0), 3)
+
 
 
         print("newTop")
@@ -135,4 +147,5 @@ class ImageProcesser:
 
         if newBottom is not None:
             self.lastBottom=newBottom
-        return newTop, newBottom
+
+        return newTop, newBottom, display
