@@ -26,15 +26,16 @@ if __name__ == '__main__':
     cap = video.create_capture(fn)
 
 
-    
+
     imgprocesser=ImageProcesser()
 
     def findRects()
         while True:
             #pull image from video feed
             flag, img = cap.read()
-            topRect, bottomRect = imgprocesser.process_image(img)
-            print("topRect and BottomRect:") 
+            topRect, bottomRect, img = imgprocesser.process_image(img,thrTrue)
+
+            print("topRect and BottomRect:")
             pprint.pprint(topRect)
             pprint.pprint(bottomRect)
             if(topRect is not None and bottomRect is not None):
