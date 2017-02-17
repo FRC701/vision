@@ -11,7 +11,7 @@ class ImageProcesser:
     def __init__(self):
         pass
 
-    def process_image(self, img,thrs1=100,thrs2=200,draw=False):
+    def process_image(self, img,thrs1=563,thrs2=1958,draw=False):
         display=None;
         if(draw==True):
             display=img.copy();
@@ -79,7 +79,8 @@ class ImageProcesser:
                         #now we check ratios to find the top and bottom ratio
                         if(ratio > topRatio - deviation) and (ratio < topRatio + deviation):
                             print("found top rectangle")
-                            cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
+                            if(draw==True):
+                                cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
                             topRects.append([rect,cnt])
 
 
