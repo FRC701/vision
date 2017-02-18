@@ -11,7 +11,7 @@ class ImageProcesser:
     def __init__(self):
         pass
 
-    def process_image(self, img,thrs1=563,thrs2=1958,draw=False):
+    def process_image(self, img,draw=False,thrs1=563,thrs2=1958,maxPoints=4,minPoints=4):
         display=None;
         if(draw==True):
             display=img.copy();
@@ -20,7 +20,7 @@ class ImageProcesser:
         widthmin = 20
         heightmin = 20
         topRatio = 4.0
-        bottomRatio = 8.25
+        bottomRatio = 8.0
         deviation = 1.0
         rotationUThresh = 15.0
         rotationLThresh = -15.0
@@ -31,8 +31,7 @@ class ImageProcesser:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-        #thrs1 = cv2.getTrackbarPos('thrs1', 'controls')
-        #thrs2 = cv2.getTrackbarPos('thrs2', 'controls')
+       
         #get edge version of the bw image
         edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
         #find all the contours
@@ -41,15 +40,15 @@ class ImageProcesser:
         topRects=[]
         bottomRects=[]
         for cnt in cnts:
-
-            print("")
+            if(draw==True):
+                cv2.drawContours(display, [cnt], -1, (255,100,255), 3)
             #first we get the minArea rect
             rect = cv2.minAreaRect(cnt)
             #now we find the aprox shape
             epsilon = 0.01*cv2.arcLength(cnt,True)
             approx = cv2.approxPolyDP(cnt,epsilon,True)
             #we only want 4 point shapes
-            if len(approx)== 4:
+            if len(approx) <= maxPoints and len(approx) >= minPoints:
                 rect = cv2.minAreaRect(cnt)
                 if(draw==True):
                     cv2.drawContours(display, [cnt], -1, (255,255,0), 3)
@@ -95,6 +94,7 @@ class ImageProcesser:
         newTop=None
         newBottom=None
         #now we check to see if more than one of each rect was found
+        
         if len(topRects)>1:
             print ("too many top and bottom rects")
              #loop through rects and see which one is closest to the last found rect
@@ -102,14 +102,20 @@ class ImageProcesser:
                 closestTop=None
                 dist=None
                 for trect in topRects:
+                    rct=trect[0]
+                    cont=trect[1]
                     if dist is None:
-                        closestTop=trect[0]
-                        dist=abs(trect[0][0])-abs(self.lastTop[0][0])
+                        closestTop=rct
+                        print("last top",self.lastTop[0][0])
+                        pprint.pprint(self.lastTop)
+                        print("trect ",trect[0][0])
+                        pprint.pprint(trect)
+                        dist=abs(rct[0][0])-abs(self.lastTop[0][0])
                     else:
-                        tdist=abs(trect[0][0])-abs(self.lastTop[0][0])
+                        tdist=abs(rct[0][0])-abs(self.lastTop[0][0])
                         if(tdist<dist):
                             dist=tdist
-                            closestTop=rect
+                            closestTop=rct
                 newTop=closestTop
         else:
             if(len(topRects)>0):
@@ -122,18 +128,26 @@ class ImageProcesser:
                 dist=None
                 #loop through rects and see which one is closest to the last found rect
                 for trect in bottomRects:
+                    rct=trect[0]
+                    cont=trect[1]
                     if dist is None:
-                        closestBott=trect[0]
-                        dist=abs(trect[0][0])-abs(self.lastBottom[0][0])
+                        #first rect
+                        closestBott=rect
+                        print("last bottom",self.lastBottom[0][0])
+                        pprint.pprint(self.lastBottom)
+                        print("trect ",trect[0][0])
+                        pprint.pprint(trect)
+                        dist=abs(rct[0][0])-abs(self.lastBottom[0][0])
+                        
                     else:
-                        tdist=abs(trect[0][0])-abs(self.lastBottom[0][0])
+                        tdist=abs(rct[0][0])-abs(self.lastBottom[0][0])
                         if(tdist<dist):
                             dist=tdist
-                            closestBott=rect
+                            closestBott=rct
                 newBottom=closestBott
         else:
             if(len(bottomRects)>0):
-                newBottom=bottomRects[0]
+                newBottom=bottomRects[0][0]
                 cv2.drawContours(display, [bottomRects[0][1]], -1, (0,255,0), 3)
 
 

@@ -42,11 +42,13 @@ from time import clock
 
 # local modules
 import common
+import pprint
 
 class VideoSynthBase(object):
-    def __init__(self, size=None, noise=0.0, bg = None, **params):
+    def __init__(self, size="1024x768", noise=0.0, bg = None, **params):
+        print("video synth")
         self.bg = None
-        self.frame_size = (640, 480)
+        self.frame_size = (1024, 768)
         if bg is not None:
             self.bg = cv2.imread(bg, 1)
             h, w = self.bg.shape[:2]
@@ -151,8 +153,9 @@ def create_capture(source = 0, fallback = presets['chess']):
     source = chunks[0]
     try: source = int(source)
     except ValueError: pass
-    params = dict( s.split('=') for s in chunks[1:] )
-
+    params = dict(s.split('=') for s in chunks[1:])
+    print("params")
+    pprint.pprint(params)
     cap = None
     if source == 'synth':
         Class = classes.get(params.get('class', None), VideoSynthBase)
