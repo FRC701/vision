@@ -29,11 +29,11 @@ class ImageProcesser:
         height, width, channels = img.shape
         #convert to 1 channel
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-
+    
+        blur = cv2.GaussianBlur(gray,(5,5),0)
        
         #get edge version of the bw image
-        edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
+        edge = cv2.Canny(blur, thrs1, thrs2, apertureSize=5)
         #find all the contours
         cimage, cnts, hierarchy = cv2.findContours(edge.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         #print("countours found:",len(cnts))
