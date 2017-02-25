@@ -16,10 +16,14 @@ class Canlistener(threading.Thread):
         can_interface = 'can0'
         for message in can.interface.Bus(can_interface, bustype='socketcan_native'):
             #print("id",message.arbitration_id)
-            if message.arbitration_id == 33821708:
+            if message.arbitration_id == 0x07011C00:
                 print("found it", message)
                 if(self.parent is not None):
                     self.parent.send_data()
+                else:
+                    bus2=can.interface.Bus(can_interface, bustype='socketcan_native')
+                    msg = can.Message(0x07011400, [10, 20, 0, 1, 3, 1, 4, 1], False)
+                    bus2.send(msg)
 
 
 

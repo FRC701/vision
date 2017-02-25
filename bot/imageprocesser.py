@@ -15,20 +15,27 @@ class ImageProcesser:
         display=None;
         if(draw==True):
             display=img.copy();
-        widthmax = 800
-        heightmax = 100
+        widthmax = 100
+        heightmax = 800
         widthmin = 20
         heightmin = 20
-        topRatio = 4.0
-        bottomRatio = 8.0
+        topRatio = 0.25
+        bottomRatio = 0.125
         deviation = 1.0
         rotationUThresh = 15.0
         rotationLThresh = -15.0
+        upper_green = ([255,255,130])
+        lower_green = ([50,50,110])
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        
         #create a copy of the orginal image so we can us it for the final display
 
         height, width, channels = img.shape
+
+        mask = cv2.inRange(hsv, lower_green, upper_green)
+        
         #convert to 1 channel
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
     
         blur = cv2.GaussianBlur(gray,(5,5),0)
        
@@ -44,19 +51,20 @@ class ImageProcesser:
                 cv2.drawContours(display, [cnt], -1, (255,100,255), 3)
             #first we get the minArea rect
             rect = cv2.minAreaRect(cnt)
+            x,y,w,h = cv2.boundingRect(cnt)
             #now we find the aprox shape
             epsilon = 0.01*cv2.arcLength(cnt,True)
             approx = cv2.approxPolyDP(cnt,epsilon,True)
             #we only want 4 point shapes
             if len(approx) <= maxPoints and len(approx) >= minPoints:
-                rect = cv2.minAreaRect(cnt)
+                cv2.rectangle(display, (x,y), (x+w,y+h), (255,255,255))
                 if(draw==True):
                     cv2.drawContours(display, [cnt], -1, (255,255,0), 3)
                 print("rect")
                 pprint.pprint(rect)
                 #get the height and width of the rectangle
-                rWidth = rect[1][0]
-                rHeight = rect[1][1]
+                rHeight = rect[1][0]
+                rWidth = rect[1][1]
                 rotation = rect[2]
                 #make sure we have positive integers
                 if(rWidth > 0) and (rHeight > 0):
@@ -85,7 +93,8 @@ class ImageProcesser:
 
                         if(ratio > bottomRatio - deviation) and (ratio < bottomRatio + deviation):
                             print("found bottom rectangle")
-                            cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
+                            if(draw==True):
+                                cv2.drawContours(display, [cnt], -1, (0,0,255), 3)
                             bottomRects.append([rect,cnt])
 
 
