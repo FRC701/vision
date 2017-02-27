@@ -21,8 +21,10 @@ class Canlistener(threading.Thread):
                 if(self.parent is not None):
                     self.parent.send_data()
                 else:
+                    print("sending fake data")
                     bus2=can.interface.Bus(can_interface, bustype='socketcan_native')
                     msg = can.Message(0x07011400, [10, 20, 0, 1, 3, 1, 4, 1], False)
+                    print("message being sent:",msg)
                     bus2.send(msg)
 
 
